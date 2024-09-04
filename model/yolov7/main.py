@@ -20,11 +20,11 @@ class YOLOv7:
 
     def __init__(self):
         super().__init__()
-        self.model_name  = "yolov7-w6"
-        self.dataset     = "display_fault"
+        self.model_name = "yolov7e6e_webui"
+        self.dataset = "webui"
         self.conf_thresh = 0.1
-        self.nms_thresh  = 0.5
-        self.is_batch    = True
+        self.nms_thresh = 0.5
+        self.is_batch = True
         self.weight_path = os.path.join(f"/workspace/model/weights/{self.model_name}.pt")
         self.image_size = 1280
         if self.is_batch:

@@ -107,10 +107,20 @@ DISPLAY_FAULT = [
     "fault"
 ]
 
+WEB_UI = [
+    "text",
+    "image",
+    "button",
+    "heading",
+    "link",
+    "input",
+]
+
 OBJECT_DATASET_CLASSES = {
     "coco": COCO_CLASSES_LIST,
     "obstacle-15": OBSTACLE_15,
     "display_fault": DISPLAY_FAULT,
+    "webui": WEB_UI,
 }
 
 def get_cls_dict(category_num):
