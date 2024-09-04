@@ -40,12 +40,21 @@ class YOLOv7:
 
     def draw_bounding_boxes(self, image, results):
         """
-        Draw bounding boxes on the image.
+        Draw bounding boxes on the image with custom font (Malgun Gothic or similar).
 
         :param image: Input image (numpy array).
         :param results: Detection results from the inference method.
         :return: Image with drawn bounding boxes.
         """
+        color_map = {
+            'text': (255, 0, 0),  # Blue
+            'image': (0, 255, 0),  # Green
+            'button': (0, 0, 255),  # Red
+            'heading': (255, 255, 0),  # Cyan
+            'link': (255, 0, 255),  # Magenta
+            'input': (0, 255, 255)  # Yellow
+        }
+
         for result in results:
             label = result['label'][0]['description']
             score = result['label'][0]['score']
@@ -54,11 +63,9 @@ class YOLOv7:
             w = int(result['position']['w'])
             h = int(result['position']['h'])
 
-            # Draw rectangle
-            cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-            # Optionally, add label and score
-            cv2.putText(image, f"{label}: {score:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+            color = color_map.get(label, (255, 255, 255))
+            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+            cv2.putText(image, f"{label}: {score:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         return image
 
@@ -141,7 +148,7 @@ class YOLOv7:
             image = numpy.ascontiguousarray(image)
             tensor_images.append(torch.from_numpy(image))
 
-        targets =  torch.zeros((0, 6))
+        targets = torch.zeros((0, 6))
         try:
             image = torch.stack(tensor_images, 0)
         except:
@@ -189,13 +196,28 @@ class YOLOv7:
                                 }
                             })
             results.append(result)
-        self.results = results
-        out_images = []
-        for image, result in zip(images, results):
-            image_with_boxes = self.draw_bounding_boxes(image, result)
-            out_images.append(image_with_boxes)
 
-        return results, out_images
+        self.results = results
+        print('results : ', results)
+        all_out_images = []
+
+        for image, result in zip(images, results):
+            image_with_single_label = image.copy()
+            image_with_boxes = self.draw_bounding_boxes(image_with_single_label, result)
+            all_out_images .append(image_with_boxes)
+
+        for image, result in zip(images, results):
+            print('result : ', result)
+            for class_idx in range(len(self.class_names)):
+                label_specific_results = [res for res in result if res['label'][0]['class_idx'] == class_idx]
+                print('label_specific_results : ', label_specific_results)
+
+                if label_specific_results:
+                    image_with_single_label = image.copy()
+                    image_with_boxes = self.draw_bounding_boxes(image_with_single_label, label_specific_results)
+                    all_out_images.append(image_with_boxes)
+
+        return results, all_out_images
 
     def inference(self, image, is_batch=True):
         if is_batch :
