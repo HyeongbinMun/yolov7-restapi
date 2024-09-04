@@ -1,0 +1,74 @@
+version: '2.3'
+
+services:
+  database:
+    container_name: yolov7-restapi_database
+    image: mysql:8.0.21
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    env_file:
+      - docker/database.env
+    restart: always
+    expose:
+      - 3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 10
+  rabbitmq:
+    container_name: yolov7-restapi_rabbitmq
+    image: rabbitmq:3.8-management
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=mqadmin
+      - RABBITMQ_DEFAULT_PASS=mqpwdpwd
+    expose:
+      - 5672
+    ports:
+      - 5672:5672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      timeout: 3s
+      retries: 10
+  redis:
+    container_name: yolov7-restapi_redis
+    image: redis:5.0-alpine
+    restart: always
+    expose:
+      - 6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      timeout: 3s
+      retries: 10
+  main:
+    container_name: yolov7-restapi_django
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    runtime: nvidia
+    restart: always
+    ipc: "host"
+    env_file:
+      - "docker/main.env"
+      - "docker/database.env"
+    links:
+      - database
+      - redis
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    expose:
+      - 8000
+      - 22
+    volumes:
+      - ./media:/workspace/media
+    ports:
+      - "28777:8000"
+      - "20022:22"
+    stdin_open: true
+    tty: true
+    environment:
+      TZ: Asia/Seoul

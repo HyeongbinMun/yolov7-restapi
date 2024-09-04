@@ -1,0 +1,16 @@
+Django==4.0.3
+djangorestframework==3.13.1
+pillow==9.0.1
+gunicorn==20.1.0
+celery==5.2.3
+mysqlclient==2.0.1
+mysql-connector
+mysql-connector-python
+django-mysql
+redis==4.1.4
+opencv-python
+huggingface_hub
+ultralytics==8.0.124
+timm==0.8.13.dev0
+yt_dlp
+lapx>=0.5.2
