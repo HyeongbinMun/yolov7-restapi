@@ -71,53 +71,115 @@ Linux 사용을 가정하여 코드를 작성하였으며, 만약 다른 환경�
 
 ```json
 {
-    "count": 1,
+    "count": 2,
     "next": null,
     "previous": null,
     "results": [
         {
-            "token": 1,
-            "image": "http://163.239.25.46:8777/media/20230906/test_LQS2TQ3.jpg",
-            "uploaded_date": "2023-09-06T22:04:27.198410+09:00",
-            "updated_date": "2023-09-06T22:04:34.488734+09:00",
-            "result_image": "http://163.239.25.46:8777/media/20230906/test_LQS2TQ3_result.png",
+            "token": 10,
+            "image": "http://mlcoconut.sogang.ac.kr:28777/media/20240908/sfsf_osc5mZA.jpg",
+            "uploaded_date": "2024-09-08T16:47:55.713443+09:00",
+            "updated_date": "2024-09-08T16:47:57.610382+09:00",
+            "result_images": [
+                {
+                    "image": "http://mlcoconut.sogang.ac.kr:28777/media/20240908/sfsf_osc5mZA_result_0.png",
+                    "uploaded_date": "2024-09-08T16:47:56.442176+09:00"
+                },
+                {
+                    "image": "http://mlcoconut.sogang.ac.kr:28777/media/20240908/sfsf_osc5mZA_result_1.png",
+                    "uploaded_date": "2024-09-08T16:47:56.665659+09:00"
+                },
+                {
+                    "image": "http://mlcoconut.sogang.ac.kr:28777/media/20240908/sfsf_osc5mZA_result_2.png",
+                    "uploaded_date": "2024-09-08T16:47:56.895249+09:00"
+                },
+                {
+                    "image": "http://mlcoconut.sogang.ac.kr:28777/media/20240908/sfsf_osc5mZA_result_3.png",
+                    "uploaded_date": "2024-09-08T16:47:57.122833+09:00"
+                },
+                {
+                    "image": "http://mlcoconut.sogang.ac.kr:28777/media/20240908/sfsf_osc5mZA_result_4.png",
+                    "uploaded_date": "2024-09-08T16:47:57.355226+09:00"
+                },
+                {
+                    "image": "http://mlcoconut.sogang.ac.kr:28777/media/20240908/sfsf_osc5mZA_result_5.png",
+                    "uploaded_date": "2024-09-08T16:47:57.588943+09:00"
+                }
+            ],
             "result": [
                 {
-                    "age": 24.27,
-                    "face": {
-                        "h": 53,
-                        "w": 49,
-                        "x": 925,
-                        "y": 287
-                    },
-                    "gender": {
-                        "class": "male",
-                        "score": 0.9970703125
-                    },
-                    "person": {
-                        "h": 543,
-                        "w": 177,
-                        "x": 864,
-                        "y": 262
+                    "label": [
+                        {
+                            "score": 0.10294992476701736,
+                            "class_idx": 1,
+                            "description": "image"
+                        }
+                    ],
+                    "position": {
+                        "h": 114.0,
+                        "w": 86.0,
+                        "x": 716.0,
+                        "y": 687.0
                     }
                 },
                 {
-                    "age": 23.08,
-                    "face": {
-                        "h": 52,
-                        "w": 48,
-                        "x": 1037,
-                        "y": 272
-                    },
-                    "gender": {
-                        "class": "male",
-                        "score": 0.9970703125
-                    },
-                    "person": {
-                        "h": 561,
-                        "w": 160,
-                        "x": 998,
-                        "y": 243
+                    "label": [
+                        {
+                            "score": 0.10742252320051192,
+                            "class_idx": 1,
+                            "description": "image"
+                        }
+                    ],
+                    "position": {
+                        "h": 49.0,
+                        "w": 61.0,
+                        "x": 843.0,
+                        "y": 532.0
+                    }
+                },
+                {
+                    "label": [
+                        {
+                            "score": 0.10997308790683746,
+                            "class_idx": 1,
+                            "description": "image"
+                        }
+                    ],
+                    "position": {
+                        "h": 68.0,
+                        "w": 42.0,
+                        "x": 618.0,
+                        "y": 710.0
+                    }
+                },
+                {
+                    "label": [
+                        {
+                            "score": 0.11338264495134354,
+                            "class_idx": 4,
+                            "description": "link"
+                        }
+                    ],
+                    "position": {
+                        "h": 29.0,
+                        "w": 91.0,
+                        "x": 468.0,
+                        "y": 844.0
+                    }
+                },
+                {
+                    "label": [
+                        {
+                            "score": 0.1173076182603836,
+                            "class_idx": 0,
+                            "description": "text"
+                        }
+                    ],
+                    "position": {
+                        "h": 112.0,
+                        "w": 830.0,
+                        "x": 99.0,
+                        "y": 502.0
                     }
                 }
             ]
@@ -125,5 +187,14 @@ Linux 사용을 가정하여 코드를 작성하였으며, 만약 다른 환경�
     ]
 }
 ```
-- 나이 추론 모델은 이미지를 입력으로 받아 결과 이미지와 분석 결과를 출력한다.
-- 원본 이미지의 주소는 ```image```, 결과 이미지의 주소는 ```result_image```로 표시되며 결과 이미지에는 사람 객체 bounding box, 얼굴 객체 bounding box, 성별, 나이, 나이 추론 점수가 표시된다.
+- 웹페이지 분석 모델은 이미지를 입력으로 받아 결과 이미지와 분석 결과를 출력한다.
+- 원본 이미지의 주소는 ```image```, 결과 이미지의 주소는 ```result_image```로 표시되며 결과 이미지에는 객체 bounding box, 객체 종류, 추론 점수가 표시된다.
+
+## How to use
+- 웹페이지 이미지를 분석할 수 있는 페이지가 존재한다.
+- 접속 URL : **http://{SERVER_IP}:{WEB_PORT}/results**
+![alt text](docs/inference/webui_inference.jpg)
+- 해당 페이지 기능
+  - 이미지 입력 : 웹페이지 이미지를 입력하여 지정된 웹 객체("text", "image", "button", "heading", "link", "input")를 찾고 추론 이미지를 보여준다.
+  - 이미지 확인 : 입력된 이미지에 따라 추론된 이미지(전체 클래스 포함, 각 클래스별 이미지)를 확인 가능하다.
+  - 이미지 저장 : 추론된 이미지를 저장할 수 있다.
