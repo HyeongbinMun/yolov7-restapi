@@ -15,7 +15,7 @@ from django.db.models import JSONField
 
 class ResultImage(models.Model):
     image_model = models.ForeignKey('ImageModel', related_name='result_images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=filename.get_upload_to)
+    image = models.ImageField(upload_to=filename.default)
     uploaded_date = models.DateTimeField(auto_now_add=True)
 
 class ImageModel(models.Model):
@@ -49,8 +49,13 @@ class ImageModel(models.Model):
             buffer.seek(0)
 
             result_image = ResultImage(image_model=self)
-            result_image.image.save(new_file_name, InMemoryUploadedFile(buffer, 'ImageField', new_file_name, 'image/png', file_len, None), save=False)
+            result_image.image.save(
+                f"{os.path.basename(self.image.name).split('.')[0]}_result_{idx}.png",
+                InMemoryUploadedFile(buffer, 'ImageField', new_file_name, 'image/png', file_len, None),
+                save=False
+            )
             result_image.save()
 
         super(ImageModel, self).save()
+
 
