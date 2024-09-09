@@ -10,8 +10,9 @@ class ResultImageSerializer(serializers.ModelSerializer):
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     result_images = ResultImageSerializer(many=True, read_only=True)
+    # threshold = serializers.FloatField(write_only=True)
 
     class Meta:
         model = ImageModel
-        fields = ('token', 'image', 'uploaded_date', 'updated_date', 'result_images', 'result')
-        read_only_fields = ('token', 'uploaded_date', 'updated_date', 'result_images', 'result')
+        fields = ('token', 'image', 'conf_threshold', 'uploaded_date', 'updated_date', 'result_images', 'result')
+        read_only_fields = ('token', 'conf_threshold', 'uploaded_date', 'updated_date', 'result_images', 'result')

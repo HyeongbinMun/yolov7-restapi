@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import cv2
 import ast
 from PIL import Image
 from io import BytesIO
@@ -20,6 +19,7 @@ class ResultImage(models.Model):
 
 class ImageModel(models.Model):
     image = models.ImageField(upload_to=filename.default)
+    conf_threshold = models.FloatField(default=0.1)
     token = models.AutoField(primary_key=True)
     uploaded_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -30,7 +30,7 @@ class ImageModel(models.Model):
 
         task_result = app.send_task(
             name='WebAnalyzer.tasks.analyzer_by_image',
-            args=[self.image.path],
+            args=[self.image.path, self.conf_threshold],
             exchange='WebAnalyzer',
             routing_key='webanalyzer_tasks',
         )

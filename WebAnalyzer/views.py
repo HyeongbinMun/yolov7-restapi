@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
-from django.shortcuts import render
 from django.views.generic import TemplateView
 
 from WebAnalyzer.models import ImageModel, ResultImage
@@ -9,8 +7,6 @@ from WebAnalyzer.serializers import ImageSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import status
-from WebAnalyzer.tasks import app
-
 
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = ImageModel.objects.all()
@@ -39,19 +35,18 @@ class ImageViewSet(viewsets.ModelViewSet):
         if not image:
             return Response({'error': 'Image file is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        conf_thresh = float(request.data.get('conf_thresh', 0.1))
-        image_instance = ImageModel.objects.create(image=image)
+        try:
+            conf_threshold = float(request.data.get('conf_thresh', 0.1))
+        except ValueError:
+            return Response({'error': 'Invalid conf_thresh value'}, status=status.HTTP_400_BAD_REQUEST)
 
-        task_result = app.send_task(
-            name='WebAnalyzer.tasks.analyzer_by_image',
-            args=[image_instance.image.path, conf_thresh],
-            exchange='WebAnalyzer',
-            routing_key='webanalyzer_tasks',
-        )
+        image_instance = ImageModel(image=image, conf_threshold=conf_threshold)
+        image_instance.save()
+
         return Response({
-            'message': 'Image uploaded successfully!',
+            'message': 'Image uploaded and processing started!',
             'image_token': image_instance.token,
-            'conf_thresh': conf_thresh,
+            'conf_thresh': conf_threshold,
         }, status=status.HTTP_201_CREATED)
 
 class ImageComparisonView(TemplateView):
