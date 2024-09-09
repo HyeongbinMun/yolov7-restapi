@@ -69,7 +69,7 @@ class YOLOv7:
 
         return image
 
-    def inference_image(self, image, score_max=1):
+    def inference_image(self, image, score_max=1, conf_thresh=0.1):
         """
         :param image: input image(np array)
         :return: dict format bounding box(x1, y1, x2, y2), scor, class, class index
@@ -81,6 +81,7 @@ class YOLOv7:
         origin_image_shape = image.copy().shape
         augment = False
         stride = int(self.model.stride.max())
+        self.conf_thresh = conf_thresh
         image = letterbox(image, self.image_size, stride=stride)[0]
         image = image[:, :, ::-1].transpose(2, 0, 1)
         image = numpy.ascontiguousarray(image)
@@ -129,7 +130,7 @@ class YOLOv7:
         return results, image_with_boxes
 
 
-    def inference_image_batch(self, images, score_max=1):
+    def inference_image_batch(self, images, conf_thresh=0.1, score_max=1):
         """
         :param image: input images(list in dict: [np array])
         :return: detection results(bounding box(x1, y1, x2, y2), score, class, class index) of each images
@@ -141,6 +142,8 @@ class YOLOv7:
         tensor_images = []
         shapes = []
         stride = int(self.model.stride.max())
+        self.conf_thresh = conf_thresh
+        print('threshold : ', self.conf_thresh)
         for image in images:
             shapes.append([[image.shape[0], image.shape[1]], [[0.3333333333333333, 0.3333333333333333], [16.0, 12.0]]])
             image = letterbox(image, self.image_size, stride=stride)[0]
@@ -219,8 +222,8 @@ class YOLOv7:
 
         return results, all_out_images
 
-    def inference(self, image, is_batch=True):
+    def inference(self, image, conf_thresh=0.1, is_batch=True):
         if is_batch :
-            return self.inference_image_batch(image)
+            return self.inference_image_batch(images=image, conf_thresh=conf_thresh)
         else:
-            return self.inference_image(image)
+            return self.inference_image(image=image, conf_thresh=conf_thresh)

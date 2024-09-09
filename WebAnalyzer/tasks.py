@@ -31,8 +31,9 @@ def module_load_init(**__):
 
 
 @app.task(acks_late=True, queue='WebAnalyzer', routing_key='webanalyzer_tasks')
-def analyzer_by_image(file_path):
+def analyzer_by_image(file_path, conf_thresh=0.1):
     image = cv2.imread(file_path)
+    print('django threshold : ', conf_thresh)
     image = cv2.resize(image, (1280, 1280), interpolation=cv2.INTER_AREA)
-    result, out_images = analyzer.inference([image])
+    result, out_images = analyzer.inference([image], conf_thresh=conf_thresh)
     return result[0], out_images
