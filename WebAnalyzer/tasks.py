@@ -26,8 +26,10 @@ def module_load_init(**__):
     #   - Add your model
     #   - You can use worker_index if you need to get and set gpu_id
     #       - ex) gpu_id = worker_index % TOTAL_GPU_NUMBER
-    from model.yolov7.main import YOLOv7
-    analyzer = YOLOv7()
+    # from model.yolov7.main import YOLOv7
+    # analyzer = YOLOv7()
+    from model.yolov11.main import YOLOv11
+    analyzer = YOLOv11()
 
 
 @app.task(acks_late=True, queue='WebAnalyzer', routing_key='webanalyzer_tasks')
