@@ -10,15 +10,15 @@ else
 fi
 
 echo "======================================="
-echo "Download start(yolov7-w6 webui)"
-wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/yolov7e6e_webui.pt -O /workspace/model/weights/yolov7e6e_webui.pt \
-&& echo "Download successful(yolov7-w6 webui)" \
-|| echo "\e[31mDownload failed(yolov7-w6 webui)\e[0m"
+echo "Download start(yolov7-w6 webui 24)"
+wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/yolov7e6e_webui_240812.pt -O /workspace/model/weights/yolov7e6e_webui_240812.pt \
+&& echo "Download successful(yolov7-w6 webui 24)" \
+|| echo "\e[31mDownload failed(yolov7-w6 webui 24)\e[0m"
 echo "======================================="
 
 echo "======================================="
-echo "Download start(yolov11-w6 webui)"
-wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/yolov11e6e_webui.pt -O /workspace/model/weights/yolov11e6e_webui.pt \
-&& echo "Download successful(yolov11-w6 webui)" \
-|| echo "\e[31mDownload failed(yolov11-w6 webui)\e[0m"
+echo "Download start(yolov7-w6 webui 25)"
+wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/yolov7e6e_webui_250401.pt -O /workspace/model/weights/yolov7e6e_webui_250401.pt \
+&& echo "Download successful(yolov7-w6 webui 25)" \
+|| echo "\e[31mDownload failed(yolov7-w6 webui 25)\e[0m"
 echo "======================================="

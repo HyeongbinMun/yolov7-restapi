@@ -20,7 +20,7 @@ class YOLOv7:
 
     def __init__(self):
         super().__init__()
-        self.model_name = "yolov7e6e_webui"
+        self.model_name = "yolov7e6e_webui_250401.pt"
         self.dataset = "webui"
         self.conf_thresh = 0.1
         self.nms_thresh = 0.5
