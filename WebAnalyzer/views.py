@@ -21,14 +21,8 @@ class ImageViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        result_images = ResultImage.objects.filter(image_model=instance)
-        result_image_urls = [request.build_absolute_uri(img.image.url) for img in result_images]
-
-        return Response({
-            'token': instance.token,
-            'image': request.build_absolute_uri(instance.image.url),
-            'result_images': result_image_urls
-        })
+        serializer = self.get_serializer(instance, context={'request': request})
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         image = request.FILES.get('image')
