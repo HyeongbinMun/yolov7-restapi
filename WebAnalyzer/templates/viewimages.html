@@ -100,7 +100,7 @@
                         document.getElementById('original-image').style.display = 'block';
                         document.getElementById('original-image-message').style.display = 'none';
 
-                        resultImages = data.result_images;
+                        resultImages = data.result_images.map(imgObj => imgObj.image);
                         currentIndex = 0;
                         showImage();
 
