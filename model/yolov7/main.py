@@ -87,8 +87,8 @@ class YOLOv7:
         image = numpy.ascontiguousarray(image)
 
         image = torch.from_numpy(image).to(self.device)
-        image = image.float()  # uint8 to fp16/32
-        image /= 255.0  # 0 - 255 to 0.0 - 1.0
+        image = image.float()
+        image /= 255.0
         if image.ndimension() == 3:
             image = image.unsqueeze(0)
         pred = self.model(image, augment=augment)[0]
@@ -129,56 +129,55 @@ class YOLOv7:
 
         return results, image_with_boxes
 
-
     def inference_image_batch(self, images, conf_thresh=0.1, score_max=1):
         """
-        :param image: input images(list in dict: [np array])
-        :return: detection results(bounding box(x1, y1, x2, y2), score, class, class index) of each images
-            - format:
-                [[{"label": [{"description": cls, "score": score, "class_idx": cls_idx}],
-                 "position": {"x": x, "y": y, "w": w, "h": h}}, ...], ...]
+        :param images: input images (list of np array)
+        :return: detection results (list: per-image bboxes with class/score),
+                 output images (list: images with drawn bboxes)
         """
         results = []
         tensor_images = []
-        shapes = []
+        origin_shapes = []
         stride = int(self.model.stride.max())
         self.conf_thresh = conf_thresh
         print('threshold : ', self.conf_thresh)
+        # 1. 원본 해상도 저장 및 resize
         for image in images:
-            shapes.append([[image.shape[0], image.shape[1]], [[0.3333333333333333, 0.3333333333333333], [16.0, 12.0]]])
-            image = letterbox(image, self.image_size, stride=stride)[0]
-            image = image[:, :, ::-1].transpose(2, 0, 1)
-            image = numpy.ascontiguousarray(image)
-            tensor_images.append(torch.from_numpy(image))
+            origin_shapes.append(image.shape[:2])  # (height, width)
+            resize_image = letterbox(image, self.image_size, stride=stride)[0]
+            resize_image = resize_image[:, :, ::-1].transpose(2, 0, 1)
+            resize_image = numpy.ascontiguousarray(resize_image)
+            tensor_images.append(torch.from_numpy(resize_image))
 
+        # 2. tensor 변환 및 모델 추론
         targets = torch.zeros((0, 6))
         try:
-            image = torch.stack(tensor_images, 0)
-        except:
-            pass
-        image = image.to(self.device, non_blocking=True)
-        image = image.float()  # uint8 to fp16/32
-        image /= 255.0  # 0 - 255 to 0.0 - 1.0
+            batch_image = torch.stack(tensor_images, 0)
+        except Exception as e:
+            print(e)
+            return [], []
+        batch_image = batch_image.to(self.device, non_blocking=True)
+        batch_image = batch_image.float()
+        batch_image /= 255.0
         targets = targets.to(self.device)
-        nb, _, height, width = image.shape  # batch size, channels, height, width
+        nb, _, height, width = batch_image.shape
 
         with torch.no_grad():
-            out, __ = self.model(image, augment=False)
-            targets[:, 2:] *= torch.Tensor([width, height, width, height]).to(self.device)  # to pixels
+            out, _ = self.model(batch_image, augment=False)
+            targets[:, 2:] *= torch.Tensor([width, height, width, height]).to(self.device)
             labels = [targets[targets[:, 0] == i, 1:] for i in range(nb)]
-            out = non_max_suppression(out, conf_thres=self.conf_thresh, iou_thres=self.nms_thresh, labels=labels, multi_label=True)
+            out = non_max_suppression(out, conf_thres=self.conf_thresh, iou_thres=self.nms_thresh, labels=labels,
+                                      multi_label=True)
 
+        # 3. 좌표 변환 → 원본 해상도 기준 bbox
         for si, det in enumerate(out):
             result = []
             if len(det):
                 detn = det.clone()
-                detn[:, :4] = scale_coords(image[si].shape[1:], detn[:, :4], tuple(shapes[si][0])).round()
+                detn[:, :4] = scale_coords(batch_image[si].shape[1:], detn[:, :4], origin_shapes[si]).round()
                 for *xyxy, conf, cls in reversed(detn.tolist()):
                     if conf > self.conf_thresh:
-                        if score_max == 100:
-                            score = float(conf) * score_max
-                        else:
-                            score = float(conf)
+                        score = float(conf) * score_max if score_max == 100 else float(conf)
                         x = float(xyxy[0])
                         y = float(xyxy[1])
                         w = float(xyxy[2]) - x
@@ -201,23 +200,17 @@ class YOLOv7:
             results.append(result)
 
         self.results = results
-        print('results : ', results)
         all_out_images = []
+        # 4. 원본 이미지에 변환된 bbox로 draw
+        for image, result in zip(images, results):
+            image_with_boxes = self.draw_bounding_boxes(image.copy(), result)
+            all_out_images.append(image_with_boxes)
 
         for image, result in zip(images, results):
-            image_with_single_label = image.copy()
-            image_with_boxes = self.draw_bounding_boxes(image_with_single_label, result)
-            all_out_images .append(image_with_boxes)
-
-        for image, result in zip(images, results):
-            print('result : ', result)
             for class_idx in range(len(self.class_names)):
                 label_specific_results = [res for res in result if res['label'][0]['class_idx'] == class_idx]
-                print('label_specific_results : ', label_specific_results)
-
                 if label_specific_results:
-                    image_with_single_label = image.copy()
-                    image_with_boxes = self.draw_bounding_boxes(image_with_single_label, label_specific_results)
+                    image_with_boxes = self.draw_bounding_boxes(image.copy(), label_specific_results)
                     all_out_images.append(image_with_boxes)
 
         return results, all_out_images
