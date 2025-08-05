@@ -10,6 +10,7 @@ from model.yolov7.utils.general import non_max_suppression, scale_coords
 from model.yolov7.utils.torch_utils import select_device
 from model.yolov7.utils.datasets import letterbox
 from model.yolov7.utils.dataset_classes import get_class
+from model.efficientnet.inference import EfficientNetInference
 
 class YOLOv7:
     model = None
@@ -27,6 +28,7 @@ class YOLOv7:
         self.is_batch = True
         self.weight_path = os.path.join(f"/workspace/model/weights/{self.model_name}.pt")
         self.image_size = 1280
+        self.classifier = EfficientNetInference()
         if self.is_batch:
             self.batch_size = 32
         else:
@@ -198,10 +200,14 @@ class YOLOv7:
                                 }
                             })
             results.append(result)
+        # self.results = results
+        print('before result: ', results)
 
-        self.results = results
+        # 4. button 정보 분류
+        self.results = self.classifier.infer_batch_dict(images, results)
+
         all_out_images = []
-        # 4. 원본 이미지에 변환된 bbox로 draw
+        # 5. 원본 이미지에 변환된 bbox로 draw
         for image, result in zip(images, results):
             image_with_boxes = self.draw_bounding_boxes(image.copy(), result)
             all_out_images.append(image_with_boxes)
@@ -213,10 +219,18 @@ class YOLOv7:
                     image_with_boxes = self.draw_bounding_boxes(image.copy(), label_specific_results)
                     all_out_images.append(image_with_boxes)
 
-        return results, all_out_images
+        return self.results, all_out_images
 
     def inference(self, image, conf_thresh=0.1, is_batch=True):
         if is_batch :
             return self.inference_image_batch(images=image, conf_thresh=conf_thresh)
         else:
             return self.inference_image(image=image, conf_thresh=conf_thresh)
+
+if __name__ == '__main__':
+    pass
+    yolo = YOLOv7()
+    classifier = EfficientNetInference()
+    image = cv2.imread("/workspace/images/test.jpg")
+    result, out_images = yolo.inference([image], conf_thresh=0.1)
+    print('after result: ', result)

@@ -22,3 +22,10 @@ wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/yolov7e6e_webui_250401.pt -O
 && echo "Download successful(yolov7-w6 webui 25)" \
 || echo "\e[31mDownload failed(yolov7-w6 webui 25)\e[0m"
 echo "======================================="
+
+echo "======================================="
+echo "Download start(EfficientNet button)"
+wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/efficientnet_250805.pth -O /workspace/model/weights/efficientnet_250805.pth \
+&& echo "Download successful(EfficientNet button)" \
+|| echo "\e[31mDownload failed(EfficientNet button)\e[0m"
+echo "======================================="
