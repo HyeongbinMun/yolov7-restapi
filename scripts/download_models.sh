@@ -25,7 +25,7 @@ echo "======================================="
 
 echo "======================================="
 echo "Download start(EfficientNet button)"
-wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/efficientnet_250805.pth -O /workspace/model/weights/efficientnet_250805.pth \
+wget -q ftp://mldisk.sogang.ac.kr/etri/webui/models/efficientnet_b0_250805.pth -O /workspace/model/weights/efficientnet_b0_250805.pth \
 && echo "Download successful(EfficientNet button)" \
 || echo "\e[31mDownload failed(EfficientNet button)\e[0m"
 echo "======================================="
