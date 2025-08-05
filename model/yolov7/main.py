@@ -229,8 +229,8 @@ class YOLOv7:
 
 if __name__ == '__main__':
     pass
-    yolo = YOLOv7()
-    classifier = EfficientNetInference()
-    image = cv2.imread("/workspace/images/test.jpg")
-    result, out_images = yolo.inference([image], conf_thresh=0.1)
-    print('after result: ', result)
+    # yolo = YOLOv7()
+    # classifier = EfficientNetInference()
+    # image = cv2.imread("/workspace/images/test.jpg")
+    # result, out_images = yolo.inference([image], conf_thresh=0.1)
+    # print('after result: ', result)

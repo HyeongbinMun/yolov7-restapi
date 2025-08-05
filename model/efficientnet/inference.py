@@ -71,22 +71,19 @@ class EfficientNetInference:
         for idx, (img, result) in enumerate(zip(images, results)):
             for obj in result:
                 label = obj.get('label', [{}])[0]
-                if label.get('class_idx') == 2:  # class_idx == 2 인 경우만 처리
+                if label.get('class_idx') == 2:
                     pos = obj.get('position', {})
                     x, y, w, h = int(pos['x']), int(pos['y']), int(pos['w']), int(pos['h'])
 
-                    # 유효한 크기일 때만 crop
                     if w > 0 and h > 0:
                         crop = img[y:y + h, x:x + w]
                         if crop.size > 0:
                             crop_images.append(crop)
-                            crop_index.append((idx, obj))  # 이미지 인덱스와 해당 객체 참조 저장
+                            crop_index.append((idx, obj))
 
-        # 크롭된 이미지가 없으면 바로 리턴
         if not crop_images:
             return results
 
-        # 추론할 크롭 이미지 전처리
         pil_images = [Image.fromarray(cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)) for crop in crop_images]
         input_tensors = torch.stack([self.transform(img) for img in pil_images]).to(self.device)
 
@@ -95,7 +92,6 @@ class EfficientNetInference:
             probs = torch.sigmoid(outputs).squeeze(1)
             pred_classes = (probs > 0.5).long()
 
-        # 결과에 따라 description 업데이트
         for pred, (img_idx, obj) in zip(pred_classes, crop_index):
             label = obj.get('label', [{}])[0]
             if label.get('description') == 'button':
