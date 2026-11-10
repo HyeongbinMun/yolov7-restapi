@@ -8,10 +8,10 @@ mysql-connector
 mysql-connector-python
 django-mysql
 redis==4.1.4
-opencv-python
+opencv-python==4.10.0.84
 huggingface_hub
 ultralytics==8.0.124
 timm==0.8.13.dev0
 yt_dlp
-lapx>=0.5.2
+lapx==0.13.1
 opencv-contrib-python==4.10.0.84
